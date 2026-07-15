@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 Perfis de Transbordo D+1 — Sofia Handoff Inteligente</title>
+<style>
+:root {
+  --bg: #0d1117; --card: #161b22; --border: #30363d; --text: #c9d1d9;
+  --red: #f85149; --orange: #d2991d; --green: #3fb950; --blue: #58a6ff;
+  --purple: #bc8cff; --pink: #db61a2; --cyan: #39d353;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; line-height:1.6; padding:20px; }
+h1 { font-size:2em; text-align:center; margin:20px 0 10px; color:#fff; }
+.subtitle { text-align:center; color:var(--blue); margin-bottom:30px; font-size:1.1em; }
+.container { max-width:1400px; margin:0 auto; }
+.summary-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:40px; }
+.summary-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; text-align:center; }
+.summary-card .number { font-size:2.2em; font-weight:800; color:var(--cyan); }
+.summary-card .label { color:#8b949e; font-size:0.85em; margin-top:4px; }
+
+.perfil { background:var(--card); border:1px solid var(--border); border-radius:16px; margin-bottom:40px; overflow:hidden; }
+.perfil-header { padding:24px 32px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+.perfil-header h2 { font-size:1.5em; }
+.perfil-header .badge { padding:6px 16px; border-radius:20px; font-weight:700; font-size:0.85em; }
+.badge-transbordo { background:rgba(248,81,73,0.2); color:var(--red); border:1px solid var(--red); }
+.badge-urgente { background:rgba(248,81,73,0.3); color:#fff; border:1px solid var(--red); animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
+
+.perfil-body { padding:24px 32px; display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+@media(max-width:900px){ .perfil-body{grid-template-columns:1fr;} }
+
+.section { margin-bottom:24px; }
+.section h3 { font-size:1.05em; color:var(--blue); margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+.section h4 { font-size:0.9em; color:var(--purple); margin:10px 0 6px; }
+
+.stats-table { width:100%; border-collapse:collapse; font-size:0.88em; }
+.stats-table td { padding:6px 10px; border-bottom:1px solid rgba(48,54,61,0.5); }
+.stats-table td:first-child { color:#8b949e; width:180px; }
+.stats-table td:last-child { font-weight:600; }
+
+.tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:0.78em; margin:2px; }
+.tag-red { background:rgba(248,81,73,0.15); color:var(--red); }
+.tag-orange { background:rgba(210,153,29,0.15); color:var(--orange); }
+.tag-green { background:rgba(63,185,80,0.15); color:var(--green); }
+.tag-blue { background:rgba(88,166,255,0.15); color:var(--blue); }
+.tag-purple { background:rgba(188,140,255,0.15); color:var(--purple); }
+
+.comportamento { background:rgba(88,166,255,0.06); border-left:3px solid var(--blue); padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:0.9em; }
+.regra { background:rgba(248,81,73,0.08); border-left:3px solid var(--red); padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:0.9em; }
+.regra strong { color:var(--red); }
+
+.conversas { margin-top:12px; }
+.conversa-block { background:rgba(48,54,61,0.3); border-radius:8px; padding:14px 18px; margin-bottom:10px; font-size:0.83em; }
+.conversa-block .deal-header { color:var(--orange); font-weight:700; margin-bottom:6px; font-size:0.85em; }
+.conversa-block .msg { padding:3px 0; border-left:2px solid rgba(88,166,255,0.2); padding-left:8px; margin:2px 0; }
+.conversa-block .msg.sofia { border-left-color:rgba(63,185,80,0.3); color:#8b949e; font-style:italic; }
+.conversa-block .msg.neg { border-left-color:rgba(248,81,73,0.4); }
+.conversa-block .msg.preco { border-left-color:rgba(210,153,29,0.4); }
+.conversa-block .msg.concorrente { border-left-color:rgba(188,140,255,0.4); }
+.conversa-block .msg.objecao { border-left-color:rgba(219,97,162,0.4); }
+.conversa-block .msg.humano { border-left-color:rgba(255,123,114,0.6); }
+
+.features-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; }
+.feature-chip { background:rgba(48,54,61,0.4); border:1px solid rgba(48,54,61,0.8); border-radius:8px; padding:10px; text-align:center; }
+.feature-chip .val { font-size:1.4em; font-weight:700; }
+.feature-chip .lbl { font-size:0.7em; color:#8b949e; margin-top:2px; }
+
+.distribuicao { margin-top:12px; }
+.bar-row { display:flex; align-items:center; margin:4px 0; font-size:0.82em; }
+.bar-row .bar-label { width:200px; text-align:right; padding-right:10px; color:#8b949e; }
+.bar-row .bar-track { flex:1; background:rgba(48,54,61,0.5); border-radius:4px; height:20px; overflow:hidden; position:relative; }
+.bar-row .bar-fill { height:100%; border-radius:4px; display:flex; align-items:center; padding-left:6px; font-weight:600; font-size:0.8em; }
+.bar-row .bar-count { width:60px; padding-left:8px; color:#8b949e; font-size:0.78em; }
+
+.sla { background:rgba(255,255,255,0.03); border-radius:8px; padding:14px 18px; margin-top:12px; display:flex; align-items:center; gap:12px; }
+.sla .sla-time { font-size:2em; font-weight:800; }
+.sla .sla-text { font-size:0.85em; color:#8b949e; }
+
+.toc-link { color:var(--blue); text-decoration:none; margin:4px 0; display:block; padding:4px 8px; border-radius:4px; font-size:0.9em; }
+.toc-link:hover { background:rgba(88,166,255,0.1); }
+
+code { background:rgba(88,166,255,0.1); padding:2px 6px; border-radius:3px; font-size:0.85em; color:var(--blue); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>🎯 10 Perfis de Transbordo — Sofia D+1</h1>
+<p class="subtitle">Base: 10.441 leads D+1 (mar-jun/2026) &nbsp;|&nbsp; Análise por perfil de comportamento, features, conversas reais e regras de decisão</p>
+
+<div class="summary-grid">
+  <div class="summary-card"><div class="number">10.441</div><div class="label">Leads D+1 analisados</div></div>
+  <div class="summary-card"><div class="number">5.0%</div><div class="label">Taxa conversão global</div></div>
+  <div class="summary-card"><div class="number" style="color:var(--red)">~150/dia</div><div class="label">Transbordos estimados</div></div>
+  <div class="summary-card"><div class="number" style="color:var(--green)">~430/dia</div><div class="label">Represados seguros</div></div>
+  <div class="summary-card"><div class="number">~26%</div><div class="label">% base → transbordo</div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PERFIL 1: PEDIU HUMANO + NÃO ENGAJOU -->
+<!-- ============================================================ -->
+<div class="perfil">
+<div class="perfil-header">
+  <h2>🔴 Perfil 1 — PEDIU HUMANO sem engajamento</h2>
+  <span class="badge badge-transbordo">TRANSBORDO IMEDIATO</span>
+</div>
+<div class="perfil-body">
+<div>
+<div class="section">
+  <h3>📊 Quem é esse lead?</h3>
+  <table class="stats-table">
+    <tr><td>Volume</td><td>~1-3 leads/dia (raro, mas crítico)</td></tr>
+    <tr><td>Taxa de conversão</td><td><span class="tag tag-red">~0%</span> — se pediu humano e nunca respondeu Sofia, não vai converter sozinho</td></tr>
+    <tr><td>Priorização</td><td><span class="tag tag-blue">p2-score</span> <span class="tag tag-blue">p3-score</span> — maioria mid/low priority</td></tr>
+    <tr><td>Score médio</td><td>-10 a 75 (ampla variação)</td></tr>
+    <tr><td>Origem mais comum</td><td>googleads, anota-app-mobile-new, facebook</td></tr>
+    <tr><td>Source</td><td>TRIAL, SELF CHECKOUT, LP SELF CHECKOUT</td></tr>
+    <tr><td>Pedidos/dia</td><td>50% Menos de 10, 50% Mais de 10</td></tr>
+    <tr><td>Computador</td><td>~60% Não tem computador (usam celular)</td></tr>
+    <tr><td>Multiprodutos</td><td>~20% multi (Balcão+Delivery, App Garçom+Balcão+Delivery)</td></tr>
+    <tr><td>Handoff anterior?</td><td>~80% já sofreram handoff inbound</td></tr>
+    <tr><td>Respondeu Sofia?</td><td><span class="tag tag-red">NÃO</span> — nunca respondeu a 1ª mensagem</td></tr>
+    <tr><td>Qualificou?</td><td><span class="tag tag-red">NÃO</span> — não passou pela qualificação</td></tr>
+    <tr><td>Mensagens lead D+1</td><td>1-7 msgs (lead manda poucas mensagens, mas são diretas)</td></tr>
+    <tr><td>Mensagens Sofia D+1</td><td>2-7 msgs (Sofia tenta engajar, sem sucesso)</td></tr>
+  </table>
+</div>
+</div>
+<div>
+<div class="section">
+  <h3>💬 Comportamento típico</h3>
+  <div class="comportamento">
+    Lead <strong>nunca respondeu a Sofia</strong>. No D+1, manda mensagens CURTAS e DIRETAS pedindo falar com atendente humano. Ignora completamente as tentativas do bot de qualificar ou ajudar. Frustração evidente — lead quer RESOLVER, não conversar com robô.
+  </div>
+  <div class="regra">
+    <strong>REGRA DE TRANSBORDO:</strong> Se <code>pediu_humano = 1</code> E <code>respondeu_primeira_msg = 0</code> → <strong>TRANSBORDO IMEDIATO</strong>. Lead ignorou o bot completamente. Não adianta insistir.
+  </div>
+</div>
+<div class="section">
+  <h3>📝 Exemplos de conversas (D+1)</h3>
+  <div class="conversas">
+    <div class="conversa-block">
+      <div class="deal-header">🏪 XIS DA JOELMA &nbsp;|&nbsp; Score: 75 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; googleads &nbsp;|&nbsp; LP SELF CHECKOUT &nbsp;|&nbsp; <10 ped/dia &nbsp;|&nbsp; Sem computador &nbsp;|&nbsp; Balcão+Delivery</div>
+      <div class="msg humano">"Quero falar com atendente"</div>
+      <div class="msg sofia">[Sofia tenta qualificar — lead ignora]</div>
+      <div class="msg humano">"Por favor"</div>
+      <div class="msg humano">"Gostaria de falar com atendente"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 ADEGA COPAO DA GRINGA &nbsp;|&nbsp; Score: -8 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; IG &nbsp;|&nbsp; SELF CHECKOUT SOFIA &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Sem computador &nbsp;|&nbsp; Balcão+Delivery &nbsp;|&nbsp; Payment link ✅</div>
+      <div class="msg preco">"Gostaria de saber mais sobre planos e valores"</div>
+      <div class="msg preco">"Ai nesse valor é incluso so o cardápio e o robô?"</div>
+      <div class="msg humano">"Quero cancelar então"</div>
+      <div class="msg humano">"Gostaria de falar com atendente"</div>
+      <div class="msg humano">"Quero falar com atendente"</div>
+      <div class="msg humano">"Por favor"</div>
+      <div class="msg">"Não estou conseguindo acessar a página para entrar na plataforma"</div>
+      <div class="msg">"Preciso ir no suporte de ajuda e mandar mensagem? Ou por aqui ja é resolvido?"</div>
+      <div class="msg">"Nao tenho computador, meu celular é iphone"</div>
+      <div class="msg preco">"Quero fazer com 65 pedidos para experimentar, por enquanto"</div>
+      <div class="msg preco">"Então minha mensalidade vai variar de acordo com números de pedidos no mês?"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 TAZ MANIA LANCHE &nbsp;|&nbsp; Score: -5 &nbsp;|&nbsp; p3-score &nbsp;|&nbsp; facebook &nbsp;|&nbsp; SELF ADMIN &nbsp;|&nbsp; <10 ped/dia &nbsp;|&nbsp; Tem computador &nbsp;|&nbsp; Balcão+Delivery &nbsp;|&nbsp; CONVERTEU ✅</div>
+      <div class="msg humano">"Preciso falar com alguém"</div>
+      <div class="msg">"Não estou conseguindo finalizar"</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PERFIL 2: PEDIU HUMANO ENGAJADO -->
+<!-- ============================================================ -->
+<div class="perfil">
+<div class="perfil-header">
+  <h2>🟡 Perfil 2 — PEDIU HUMANO mas Engajou com Sofia</h2>
+  <span class="badge badge-transbordo">REPRESAR D+1 / TRANSBORDAR se repetir D+2</span>
+</div>
+<div class="perfil-body">
+<div>
+<div class="section">
+  <h3>📊 Quem é esse lead?</h3>
+  <table class="stats-table">
+    <tr><td>Volume</td><td><strong>13 leads</strong> (3 meses) — ~1-2/dia</td></tr>
+    <tr><td>Taxa de conversão</td><td><span class="tag tag-green">23.1%</span> — ALTA! 3 de 13 converteram sozinhos</td></tr>
+    <tr><td>Priorização</td><td><span class="tag tag-green">p1-score (17%)</span> <span class="tag tag-blue">p2-score (67%)</span> <span class="tag tag-blue">p3-score (17%)</span></td></tr>
+    <tr><td>Score médio</td><td><strong>42</strong> (-8 a 125) — score mais alto que média</td></tr>
+    <tr><td>Origem</td><td>googleads (50%), IG, anota-llm-sofia-whatsapp-flow</td></tr>
+    <tr><td>Source</td><td>SF INBOUND, SELF CHECKOUT SOFIA, LP SELF CHECKOUT</td></tr>
+    <tr><td>Pedidos/dia</td><td>50% Menos de 10, 50% Mais de 10</td></tr>
+    <tr><td>Computador</td><td>50% Sim, 50% Não — bem dividido</td></tr>
+    <tr><td>Qualificou?</td><td><span class="tag tag-green">Sim (92%)</span> — passou pela qualificação</td></tr>
+    <tr><td>Respondeu Sofia?</td><td><span class="tag tag-green">Sim (100%)</span></td></tr>
+    <tr><td>Mensagens lead D+1</td><td><strong>8.0 em média</strong> — lead conversa bastante</td></tr>
+    <tr><td>Mensagens Sofia D+1</td><td>8.1 em média</td></tr>
+    <tr><td>Handoff</td><td>~85% inbound handoff</td></tr>
+  </table>
+</div>
+</div>
+<div>
+<div class="section">
+  <h3>💬 Comportamento típico</h3>
+  <div class="comportamento">
+    Lead <strong>já qualificou e tem conversa ativa com Sofia</strong>, mas em algum momento pede falar com humano. Diferente do Perfil 1, esse lead TEM potencial de converter sozinho (23.1%!). O pedido de humano geralmente vem junto com questões complexas (preço, cancelamento, problemas técnicos).
+  </div>
+  <div class="regra">
+    <strong>REGRA:</strong> Se <code>pediu_humano = 1</code> E <code>qualificou = 1</code> → <strong>REPRESAR no D+1</strong>. Se voltar a pedir humano no D+2, aí sim transbordar. 23.1% convertem sozinhos — não queimar lead bom.
+  </div>
+</div>
+<div class="section">
+  <h3>📝 Exemplos de conversas (D+1)</h3>
+  <div class="conversas">
+    <div class="conversa-block">
+      <div class="deal-header">🏪 HOT DOG DO CICINHO &nbsp;|&nbsp; Score: 65 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; googleads &nbsp;|&nbsp; <10 ped/dia &nbsp;|&nbsp; Tem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg humano">"Gostaria de falar com um atendente"</div>
+      <div class="msg">"65 a 150"</div>
+      <div class="msg humano">"Quero falar com um atendente!!!"</div>
+      <div class="msg preco">"Gostaria de rever meu plano"</div>
+      <div class="msg objecao">"Gostaria de cancelar"</div>
+      <div class="msg objecao">"Estou no aguardo"</div>
+      <div class="msg objecao">"Quanta demora"</div>
+      <div class="msg preco">"Estou pagando 250 por mês e mal uso a plataforma"</div>
+      <div class="msg">"Para receber pedidos do ifood"</div>
+      <div class="msg">"Boa noite"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 MED CAFÉ &nbsp;|&nbsp; Score: 50 &nbsp;|&nbsp; p1-score &nbsp;|&nbsp; googleads &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Tem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg humano">"Gostaria de falar com atendente pra esclarecer como funciona melhor"</div>
+      <div class="msg">"Oque mais oferece esse plano"</div>
+      <div class="msg">"Uns 40"</div>
+      <div class="msg">"Ainda vai abrir"</div>
+      <div class="msg">"Tudo bem"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 PIZZARIA NOVA ERA &nbsp;|&nbsp; Score: 25 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; whatsapp-flow &nbsp;|&nbsp; SF INBOUND &nbsp;|&nbsp; <10 ped/dia &nbsp;|&nbsp; Sem computador &nbsp;|&nbsp; Balcão+Delivery &nbsp;|&nbsp; ✅ CONVERTEU!</div>
+      <div class="msg">[Lead pediu humano mas converteu sozinho — 23.1% de chance]</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 BL BURGUER &nbsp;|&nbsp; Score: 30 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; googleads &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Tem computador &nbsp;|&nbsp; Handoff inbound &nbsp;|&nbsp; Payment link ✅</div>
+      <div class="msg humano">"Preciso falar com um atendente por favor"</div>
+      <div class="msg">"Não consigo acessar o link"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 GOLDENKOREAL &nbsp;|&nbsp; Score: 125 &nbsp;|&nbsp; p1-score &nbsp;|&nbsp; IG &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Tem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg humano">"Quero falar com um consultor"</div>
+      <div class="msg">"Tenho dúvidas sobre a integração"</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PERFIL 3: NEGATIVO / INSATISFEITO -->
+<!-- ============================================================ -->
+<div class="perfil">
+<div class="perfil-header">
+  <h2>🔴 Perfil 3 — NEGATIVO / INSATISFEITO (sentimento negativo)</h2>
+  <span class="badge badge-urgente">TRANSBORDO IMEDIATO</span>
+</div>
+<div class="perfil-body">
+<div>
+<div class="section">
+  <h3>📊 Quem é esse lead?</h3>
+  <table class="stats-table">
+    <tr><td>Volume</td><td><strong>13 leads</strong> (3 meses) — ~1-2/dia</td></tr>
+    <tr><td>Taxa de conversão</td><td><span class="tag tag-orange">8.3%</span> (NEGATIVO Simples) / <span class="tag tag-red">0%</span> (NEGATIVO com Objeções)</td></tr>
+    <tr><td>Priorização</td><td><span class="tag tag-blue">p2-score (55%)</span> <span class="tag tag-blue">p3-score (45%)</span></td></tr>
+    <tr><td>Score médio</td><td><strong>35</strong> (10 a 75)</td></tr>
+    <tr><td>Origem</td><td>anota-app-mobile-new (50%), facebook, googleads</td></tr>
+    <tr><td>Source</td><td>TRIAL (58%), SHOWCASE SELF SOFIA, SELF ADMIN</td></tr>
+    <tr><td>Pedidos/dia</td><td>50% Menos de 10, 50% Mais de 10</td></tr>
+    <tr><td>Computador</td><td><span class="tag tag-red">83% NÃO tem computador</span></td></tr>
+    <tr><td>Qualificou?</td><td>Sim (a maioria qualificou)</td></tr>
+    <tr><td>Respondeu Sofia?</td><td>Sim (100%)</td></tr>
+    <tr><td>Mensagens lead D+1</td><td><strong>5.7 em média</strong> — lead reclama bastante</td></tr>
+    <tr><td>Mensagens Sofia D+1</td><td>6.6 em média</td></tr>
+  </table>
+</div>
+</div>
+<div>
+<div class="section">
+  <h3>💬 Comportamento típico</h3>
+  <div class="comportamento">
+    Lead expressa <strong>frustração, insatisfação ou raiva</strong> no D+1. Reclama de funcionalidades, ameaça cancelar, demonstra impaciência. Palavras-chave: "cancelar", "não está funcionando", "demora", "problema", "não consigo", "quanta demora", "lixo", "horrível".
+  </div>
+  <div class="regra">
+    <strong>REGRA DE TRANSBORDO:</strong> Se <code>sentimento_negativo = 1</code> → <strong>TRANSBORDO IMEDIATO</strong>. Lead em risco de churn. Não pode esperar. Humano precisa reverter experiência.
+  </div>
+</div>
+<div class="section">
+  <h3>📝 Exemplos de conversas (D+1)</h3>
+  <div class="conversas">
+    <div class="conversa-block">
+      <div class="deal-header">🏪 BAKONES LANCHES &nbsp;|&nbsp; Score: 10 &nbsp;|&nbsp; p3-score &nbsp;|&nbsp; anota-app-mobile-new &nbsp;|&nbsp; TRIAL &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Sem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg neg">"Eu quero cancelar"</div>
+      <div class="msg neg">"O cancelamento da conta"</div>
+      <div class="msg">"Ok obrigado"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 BOTEKU'S FALEIRO &nbsp;|&nbsp; Score: -30 &nbsp;|&nbsp; p3-score &nbsp;|&nbsp; facebook &nbsp;|&nbsp; SHOWCASE SELF SOFIA &nbsp;|&nbsp; <10 ped/dia &nbsp;|&nbsp; Sem computador &nbsp;|&nbsp; Payment link ✅</div>
+      <div class="msg neg">"O meu problema é justamente o Ifood não estar tocando nada"</div>
+      <div class="msg preco">"Compensa pra mim?"</div>
+      <div class="msg neg">"Faltar dinheiro em caixa"</div>
+      <div class="msg neg">"Minha maior preocupação é não ter clientes"</div>
+      <div class="msg">"Estou começando agora"</div>
+      <div class="msg preco">"E quanto vai ser a entrega terceirizada?"</div>
+      <div class="msg objecao">"Mas aí eu pago a taxa do Ifood igual pra cada pedido e o dinheiro pra pagar a entrega sai do meu bolso"</div>
+      <div class="msg">"Mas eu posso usar a entrega do Ifood?"</div>
+      <div class="msg">"Como funciona whatsapp+ Ifood"</div>
+      <div class="msg preco">"Mas aí eu tenho que pagar na hora pro Ifood seja por pix ou crédito e o Ifood só vai me repassar depois de um mês?"</div>
+      <div class="msg">"Qual app de entrega eu posso usar?"</div>
+      <div class="msg">"Tenho uma dúvida"</div>
+      <div class="msg">"Já está pago"</div>
+      <div class="msg preco">"Se eu receber pedidos pelo whatsapp quem entrega eu não tenho entrega própria"</div>
+      <div class="msg">"Eu lanço como cliente"</div>
+      <div class="msg">"Mas se foi tu que fez o pagamento nada mais [que] fazer o cancelamento sendo que está dentro das 4 horas"</div>
+      <div class="msg preco">"Mas vai ser integral o valor"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 DÁRIO RAÇÕES &nbsp;|&nbsp; Score: 75 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; anota-app-mobile-new &nbsp;|&nbsp; TRIAL &nbsp;|&nbsp; <10 ped/dia &nbsp;|&nbsp; Sem computador</div>
+      <div class="msg neg">[Conversa com sentimento negativo — insatisfação com produto/serviço]</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 TÔ NA BROKA &nbsp;|&nbsp; Score: -10 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; anota-app-mobile-new &nbsp;|&nbsp; <10 ped/dia &nbsp;|&nbsp; Sem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg neg">[Conversa com frustração expressa — pediu cancelamento/reclamação]</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PERFIL 4: CONCORRENTE + NÃO ENGAJOU -->
+<!-- ============================================================ -->
+<div class="perfil">
+<div class="perfil-header">
+  <h2>🔴 Perfil 4 — MENCIONOU CONCORRENTE + Não Engajou</h2>
+  <span class="badge badge-transbordo">TRANSBORDO IMEDIATO</span>
+</div>
+<div class="perfil-body">
+<div>
+<div class="section">
+  <h3>📊 Quem é esse lead?</h3>
+  <table class="stats-table">
+    <tr><td>Volume</td><td><strong>1 lead identificado</strong> (3 meses) — raro mas perigoso</td></tr>
+    <tr><td>Taxa de conversão</td><td><span class="tag tag-red">0%</span></td></tr>
+    <tr><td>Priorização</td><td><span class="tag tag-blue">p2-score</span></td></tr>
+    <tr><td>Score</td><td>-10 (baixo)</td></tr>
+    <tr><td>Origem</td><td>anota-app-mobile-new</td></tr>
+    <tr><td>Source</td><td>TRIAL</td></tr>
+    <tr><td>Pedidos/dia</td><td>Mais de 10</td></tr>
+    <tr><td>Computador</td><td>Não</td></tr>
+    <tr><td>Qualificou?</td><td><span class="tag tag-red">NÃO</span></td></tr>
+    <tr><td>Respondeu Sofia?</td><td>Sim (respondeu 1ª msg mas não qualificou)</td></tr>
+    <tr><td>Mensagens lead D+1</td><td>1 — lead manda mensagem pontual</td></tr>
+    <tr><td>Mensagens Sofia D+1</td><td>3</td></tr>
+  </table>
+</div>
+</div>
+<div>
+<div class="section">
+  <h3>💬 Comportamento típico</h3>
+  <div class="comportamento">
+    Lead <strong>mencionou concorrente pelo nome</strong> (Instadelivery, 99food, Saipos, etc.) mas <strong>NÃO se qualificou</strong> com Sofia. Está claramente pesquisando alternativas. Se não agir rápido, perde o lead para o concorrente. Muitas vezes o lead compartilha link de cardápio do concorrente ou pergunta "vocês fazem igual X?".
+  </div>
+  <div class="regra">
+    <strong>REGRA DE TRANSBORDO:</strong> Se <code>mencionou_concorrente = 1</code> E <code>qualificou = 0</code> → <strong>TRANSBORDO IMEDIATO</strong>. Lead está em risco de fugir para concorrente. Humano precisa fazer contraproposta.
+  </div>
+</div>
+<div class="section">
+  <h3>📝 Exemplos de conversas (D+1)</h3>
+  <div class="conversas">
+    <div class="conversa-block">
+      <div class="deal-header">🏪 FATIAS DOS SONHOS &nbsp;|&nbsp; Score: -10 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; anota-app-mobile-new &nbsp;|&nbsp; TRIAL &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Sem computador &nbsp;|&nbsp; Handoff outbound</div>
+      <div class="msg concorrente">"*Olá boa noite! Cardápio digital Benefícios de fazer o pedido pelo link*: ❤️<br>✅ *Programa Fidelidade*<br>✅ Promoções exclusivas<br>✅ Evite erros e Peça + rápido<br>*Pedindo pelo link permite processar o pedido de forma + eficiente agilizando a entrega:* 👇👇<br>https://instadelivery.com.br/fatiadossonhoss"</div>
+      <div class="msg" style="color:#8b949e;margin-top:8px;">⚠️ Lead compartilhou link do concorrente Instadelivery. Sinal claro de que JÁ USA outro sistema e está testando o Anota Aí como alternativa.</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PERFIL 5: CONCORRENTE + ENGAJOU -->
+<!-- ============================================================ -->
+<div class="perfil">
+<div class="perfil-header">
+  <h2>🟡 Perfil 5 — MENCIONOU CONCORRENTE mas Engajou</h2>
+  <span class="badge badge-transbordo">REPRESAR D+1 (25% conv!)</span>
+</div>
+<div class="perfil-body">
+<div>
+<div class="section">
+  <h3>📊 Quem é esse lead?</h3>
+  <table class="stats-table">
+    <tr><td>Volume</td><td><strong>4 leads</strong> (3 meses) — ~0-1/dia</td></tr>
+    <tr><td>Taxa de conversão</td><td><span class="tag tag-green">25.0%</span> — ALTA!</td></tr>
+    <tr><td>Priorização</td><td><span class="tag tag-blue">p1-score</span> <span class="tag tag-blue">p2-score</span> <span class="tag tag-blue">p3-score</span> — bem distribuído</td></tr>
+    <tr><td>Score médio</td><td><strong>-3</strong> (-17 a 80)</td></tr>
+    <tr><td>Origem</td><td>googleads (75%), bing, facebook</td></tr>
+    <tr><td>Source</td><td>TRIAL (50%), SF INBOUND</td></tr>
+    <tr><td>Pedidos/dia</td><td><strong>100% Mais de 10</strong> — leads de alto volume!</td></tr>
+    <tr><td>Computador</td><td>50% Sim, 50% Não</td></tr>
+    <tr><td>Qualificou?</td><td><span class="tag tag-green">Sim (100%)</span></td></tr>
+    <tr><td>Respondeu Sofia?</td><td><span class="tag tag-green">Sim (100%)</span></td></tr>
+    <tr><td>Mensagens lead D+1</td><td><strong>12.3 em média</strong> — lead conversa MUITO</td></tr>
+    <tr><td>Mensagens Sofia D+1</td><td>14.0 em média</td></tr>
+  </table>
+</div>
+</div>
+<div>
+<div class="section">
+  <h3>💬 Comportamento típico</h3>
+  <div class="comportamento">
+    Lead mencionou concorrente (99food, Ifood, etc.) mas está <strong>ativamente engajado com Sofia</strong>. Está COMPARANDO — o que é um sinal de compra, não de fuga. Quer saber se o Anota Aí é melhor que a alternativa. 25% convertem sozinhos — é um lead de alta intenção que está fazendo due diligence.
+  </div>
+  <div class="regra">
+    <strong>REGRA:</strong> Se <code>mencionou_concorrente = 1</code> E <code>qualificou = 1</code> → <strong>REPRESAR</strong>. Lead está comparando = sinal de compra. Sofia pode ajudar mostrando vantagens competitivas.
+  </div>
+</div>
+<div class="section">
+  <h3>📝 Exemplos de conversas (D+1)</h3>
+  <div class="conversas">
+    <div class="conversa-block">
+      <div class="deal-header">🏪 ANDRÉIA LANCHES CIA &nbsp;|&nbsp; Score: -17 &nbsp;|&nbsp; p3-score &nbsp;|&nbsp; googleads &nbsp;|&nbsp; TRIAL &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Sem computador</div>
+      <div class="msg concorrente">"Eu quero ajuda pra montar um cardápio pra poder colocar na 99food"</div>
+      <div class="msg">"Eu quero fazer pelo celular, tem como?"</div>
+      <div class="msg">"Digitando"</div>
+      <div class="msg objecao">"Não está carregando"</div>
+      <div class="msg objecao">"Continua dando erro"</div>
+      <div class="msg">"Eu já tenho esse teste grátis"</div>
+      <div class="msg">"Ainda vai abrir"</div>
+      <div class="msg">"Uns 30+"</div>
+      <div class="msg">"Tá bom"</div>
+      <div class="msg">"Faz sim"</div>
+      <div class="msg preco">"Que seja uma das principais [formas] de pedidos"</div>
+      <div class="msg">"Obrigada"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 ANOTA_AI - JOTTA LANCHES &nbsp;|&nbsp; Score: 80 &nbsp;|&nbsp; p1-score &nbsp;|&nbsp; bing &nbsp;|&nbsp; SF INBOUND &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Tem computador &nbsp;|&nbsp; App Garçom+Balcão+Delivery &nbsp;|&nbsp; ✅ CONVERTEU!</div>
+      <div class="msg concorrente">"Vocês integram com outros apps de entrega?"</div>
+      <div class="msg">"Já uso Ifood e quero saber se consigo integrar"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 AÇAÍ PRIME CAFÉ &nbsp;|&nbsp; Score: -5 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; facebook &nbsp;|&nbsp; <10 ped/dia &nbsp;|&nbsp; Tem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg concorrente">[Mencionou concorrente — comparando sistemas]</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PERFIL 6: PREÇO + NÃO ENGAJOU -->
+<!-- ============================================================ -->
+<div class="perfil">
+<div class="perfil-header">
+  <h2>🔴 Perfil 6 — PERGUNTOU PREÇO + Não Engajou</h2>
+  <span class="badge badge-transbordo">TRANSBORDAR</span>
+</div>
+<div class="perfil-body">
+<div>
+<div class="section">
+  <h3>📊 Quem é esse lead?</h3>
+  <table class="stats-table">
+    <tr><td>Volume</td><td><strong>2 leads</strong> (3 meses) — raro</td></tr>
+    <tr><td>Taxa de conversão</td><td><span class="tag tag-red">0%</span></td></tr>
+    <tr><td>Priorização</td><td><span class="tag tag-green">p1-score</span> <span class="tag tag-blue">p2-score</span></td></tr>
+    <tr><td>Score</td><td>25 a 110 (bem variado)</td></tr>
+    <tr><td>Origem</td><td>googleads</td></tr>
+    <tr><td>Source</td><td>SF INBOUND</td></tr>
+    <tr><td>Pedidos/dia</td><td>50% Menos de 10, 50% Mais de 10</td></tr>
+    <tr><td>Computador</td><td>50% Não</td></tr>
+    <tr><td>Qualificou?</td><td><span class="tag tag-red">NÃO</span></td></tr>
+    <tr><td>Respondeu Sofia?</td><td>50% Sim, 50% Não</td></tr>
+    <tr><td>Mensagens lead D+1</td><td><strong>8.5 em média</strong> — lead pergunta bastante sobre preço</td></tr>
+    <tr><td>Mensagens Sofia D+1</td><td>7.5 em média</td></tr>
+  </table>
+</div>
+</div>
+<div>
+<div class="section">
+  <h3>💬 Comportamento típico</h3>
+  <div class="comportamento">
+    Lead <strong>só quer saber de preço</strong>. Pergunta valores, planos, mensalidade, taxas. Não se interessa em qualificar ou conhecer o produto. É o típico "price-shopper" — está comparando preços e não vai converter sem falar com humano que possa negociar. 0% de conversão sozinho.
+  </div>
+  <div class="regra">
+    <strong>REGRA DE TRANSBORDO:</strong> Se <code>perguntou_preco = 1</code> E <code>qualificou = 0</code> → <strong>TRANSBORDAR</strong>. Lead price-shopper. Precisa de humano para negociar valores ou oferecer trial/desconto.
+  </div>
+</div>
+<div class="section">
+  <h3>📝 Exemplos de conversas (D+1)</h3>
+  <div class="conversas">
+    <div class="conversa-block">
+      <div class="deal-header">🏪 ADEGA COPAO DA GRINGA &nbsp;|&nbsp; Score: -8 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; IG &nbsp;|&nbsp; SELF CHECKOUT SOFIA &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Sem computador &nbsp;|&nbsp; Balcão+Delivery</div>
+      <div class="msg preco">"Gostaria de saber mais sobre planos e valores"</div>
+      <div class="msg preco">"Ai nesse valor é incluso so o cardápio e o robô?"</div>
+      <div class="msg preco">"Então minha mensalidade vai variar de acordo com números de pedidos no mês?"</div>
+      <div class="msg preco">"Quero fazer com 65 pedidos para experimentar, por enquanto"</div>
+      <div class="msg preco">"Caso eu precise alterar alguma opção, tem alguma taxa por fora?"</div>
+      <div class="msg preco">"Esse valor do cardápio descontado automaticamente depois?"</div>
+      <div class="msg">"Tem bastante pedido, bebidas sai todo dia"</div>
+      <div class="msg">"100 certeza"</div>
+      <div class="msg">"Nao tenho computador, meu celular é iphone"</div>
+      <div class="msg">"Obrigada"</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PERFIL 7: PREÇO + OBJEÇÕES (Engajado) -->
+<!-- ============================================================ -->
+<div class="perfil">
+<div class="perfil-header">
+  <h2>🔴 Perfil 7 — PREÇO + OBJEÇÕES (Lead negociando mas travado)</h2>
+  <span class="badge badge-transbordo">TRANSBORDAR</span>
+</div>
+<div class="perfil-body">
+<div>
+<div class="section">
+  <h3>📊 Quem é esse lead?</h3>
+  <table class="stats-table">
+    <tr><td>Volume</td><td><strong>10 leads</strong> (3 meses) — ~1-2/dia</td></tr>
+    <tr><td>Taxa de conversão</td><td><span class="tag tag-red">0%</span> — NENHUM converteu sozinho!</td></tr>
+    <tr><td>Priorização</td><td><span class="tag tag-green">p1-score (20%)</span> <span class="tag tag-blue">p2-score (50%)</span> <span class="tag tag-blue">p3-score (30%)</span></td></tr>
+    <tr><td>Score médio</td><td><strong>35</strong> (30 a 110)</td></tr>
+    <tr><td>Origem</td><td>googleads (60%), facebook (40%)</td></tr>
+    <tr><td>Source</td><td>TRIAL (40%), SF INBOUND, LP SELF CHECKOUT</td></tr>
+    <tr><td>Pedidos/dia</td><td><strong>80% Mais de 10</strong> — leads de alto volume!</td></tr>
+    <tr><td>Computador</td><td>60% Sim</td></tr>
+    <tr><td>Qualificou?</td><td><span class="tag tag-green">Sim (100%)</span></td></tr>
+    <tr><td>Respondeu Sofia?</td><td><span class="tag tag-green">Sim (100%)</span></td></tr>
+    <tr><td>Mensagens lead D+1</td><td><strong>9.9 em média</strong></td></tr>
+    <tr><td>Mensagens Sofia D+1</td><td><strong>10.7 em média</strong></td></tr>
+    <tr><td>Handoff</td><td>~80% inbound handoff</td></tr>
+  </table>
+</div>
+</div>
+<div>
+<div class="section">
+  <h3>💬 Comportamento típico</h3>
+  <div class="comportamento">
+    Lead <strong>qualificou e está negociando</strong>, mas levantou objeções de preço. Frases típicas: "Muito caro", "Não consigo fazer esse investimento", "Não quero", "Deixa para próxima". A conversa é longa (10 msgs lead + 11 msgs Sofia) mas <strong>0% converteram</strong>. O bot não consegue fechar venda quando o lead tem resistência a preço. Precisa de humano para oferecer desconto, trial estendido ou contraproposta.
+  </div>
+  <div class="regra">
+    <strong>REGRA DE TRANSBORDO:</strong> Se <code>perguntou_preco = 1</code> E <code>objecoes_levantadas >= 1</code> → <strong>TRANSBORDAR</strong>. 0% de conversão com bot. Lead travado em negociação — só humano desbloqueia.
+  </div>
+</div>
+<div class="section">
+  <h3>📝 Exemplos de conversas (D+1)</h3>
+  <div class="conversas">
+    <div class="conversa-block">
+      <div class="deal-header">🏪 DISK BEER BEBIDAS ON &nbsp;|&nbsp; Score: 45 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; googleads &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Tem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg">"Já está funcionando"</div>
+      <div class="msg">"Só registrar e acompanhar os pedidos de um jeito mais claro"</div>
+      <div class="msg">"Anota em caderno"</div>
+      <div class="msg">"Ainda não comecei atender pelo delivery via aplicativo"</div>
+      <div class="msg preco">"Mais gostaria de um plano mais simples somente para ter organização"</div>
+      <div class="msg">"Para conhecidos"</div>
+      <div class="msg">"Somente atendimento via whatsapp"</div>
+      <div class="msg preco">"Muito caro"</div>
+      <div class="msg objecao">"Deixa para próxima"</div>
+      <div class="msg">"Boa noite"</div>
+      <div class="msg">"Positivo"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 AROMAS E SABORES &nbsp;|&nbsp; Score: 33 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; googleads &nbsp;|&nbsp; TRIAL &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Sem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg">"Já funciona"</div>
+      <div class="msg">"Temos duas semanas funcionando"</div>
+      <div class="msg">"Pedidos pelo WhatsApp, e controle de vendas que saiu"</div>
+      <div class="msg">"Então temos em média por dia de segunda a sexta uns 25 pedidos"</div>
+      <div class="msg">"Por dia"</div>
+      <div class="msg preco">"O valor mensal"</div>
+      <div class="msg preco">"Muito caro, não consigo fazer esse investimento por agora"</div>
+      <div class="msg objecao">"Não, eu preciso do pagamento na hora tem alguma outra forma de recebimento?"</div>
+      <div class="msg objecao">"Não quero"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 PONTO DO ESPETO &nbsp;|&nbsp; Score: 110 &nbsp;|&nbsp; p1-score &nbsp;|&nbsp; googleads &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Tem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg preco">"Qual o valor para +100 pedidos?"</div>
+      <div class="msg objecao">"Achei salgado o preço"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 BEBIDAS CASA 243 &nbsp;|&nbsp; Score: 30 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; facebook &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Tem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg preco">[Negociação longa — preço + objeções — 0% conv]</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 CASA DA PARMEGIANA &nbsp;|&nbsp; Score: 65 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; IG &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Tem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg preco">[Preço + objeção — lead com potencial (score 65) mas travado]</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PERFIL 8: MÚLTIPLAS OBJEÇÕES + ENGAJADO -->
+<!-- ============================================================ -->
+<div class="perfil">
+<div class="perfil-header">
+  <h2>🔴 Perfil 8 — MÚLTIPLAS OBJEÇÕES (2+) mas Engajado</h2>
+  <span class="badge badge-transbordo">TRANSBORDAR</span>
+</div>
+<div class="perfil-body">
+<div>
+<div class="section">
+  <h3>📊 Quem é esse lead?</h3>
+  <table class="stats-table">
+    <tr><td>Volume</td><td><strong>10 leads</strong> (3 meses) — ~1-2/dia</td></tr>
+    <tr><td>Taxa de conversão</td><td><span class="tag tag-red">0%</span> — ZERO conversão!</td></tr>
+    <tr><td>Priorização</td><td><span class="tag tag-blue">p2-score (20%)</span> <span class="tag tag-blue">p3-score (80%)</span></td></tr>
+    <tr><td>Score médio</td><td><span class="tag tag-red"><strong>-2</strong></span> (-23 a 7) — score MUITO baixo</td></tr>
+    <tr><td>Origem</td><td>googleads (20%), outros/null (80%)</td></tr>
+    <tr><td>Source</td><td>TRIAL (40%), outros/null</td></tr>
+    <tr><td>Pedidos/dia</td><td><strong>100% Mais de 10</strong> — alto volume!</td></tr>
+    <tr><td>Computador</td><td>40% Sim, 60% Não</td></tr>
+    <tr><td>Multiprodutos</td><td>25% multi (App Garçom+Balcão+Delivery)</td></tr>
+    <tr><td>Qualificou?</td><td><span class="tag tag-green">Sim (100%)</span></td></tr>
+    <tr><td>Respondeu Sofia?</td><td><span class="tag tag-green">Sim (100%)</span></td></tr>
+    <tr><td>Mensagens lead D+1</td><td><strong>16.4 em média</strong> — conversa MUITO LONGA</td></tr>
+    <tr><td>Mensagens Sofia D+1</td><td><strong>18.1 em média</strong> — Sofia gasta muito esforço</td></tr>
+    <tr><td>Handoff</td><td>~90% inbound handoff</td></tr>
+  </table>
+</div>
+</div>
+<div>
+<div class="section">
+  <h3>💬 Comportamento típico</h3>
+  <div class="comportamento">
+    Lead que <strong>qualificou e conversou MUITO</strong> (16+ mensagens!), mas levantou <strong>2 ou mais objeções diferentes</strong> (preço, confiança, timing, funcionalidade). A conversa é longa e desgastante para o bot. O lead está em um loop de objeções que Sofia não consegue quebrar. <strong>0% de conversão</strong> — Sofia não fecha leads com múltiplas objeções. Precisa de humano para reshuffle completo da abordagem.
+  </div>
+  <div class="regra">
+    <strong>REGRA DE TRANSBORDO:</strong> Se <code>objecoes_levantadas >= 2</code> E <code>qualificou = 1</code> → <strong>TRANSBORDAR</strong>. 0% conversão. Lead travado em loop de objeções — só humano resolve.
+  </div>
+</div>
+<div class="section">
+  <h3>📝 Exemplos de conversas (D+1)</h3>
+  <div class="conversas">
+    <div class="conversa-block">
+      <div class="deal-header">🏪 RESTAURANTE CASARÃO &nbsp;|&nbsp; Score: -23 &nbsp;|&nbsp; p3-score &nbsp;|&nbsp; sem origem &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Sem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg">"Como funciona o anota ai por favor"</div>
+      <div class="msg">"Meu restaurante já funciona a muitos anos"</div>
+      <div class="msg">"35 a 40 pedidos"</div>
+      <div class="msg objecao">"O problema é que eu tenho que está escrevendo"</div>
+      <div class="msg">"E ainda tem a opção de escrever"</div>
+      <div class="msg preco">"Eu achei o valor alto"</div>
+      <div class="msg">"As 3 opções que vc falou"</div>
+      <div class="msg objecao">"Vou pensar direitinho e volto a falar com vc"</div>
+      <div class="msg objecao">"Vou analisar e volto a falar com vc tá bom"</div>
+      <div class="msg">"Faz sim pq eu não perco pedido [home] a Deus"</div>
+      <div class="msg">"Boa noite"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 MANGUEIRINHA LANCHES &nbsp;|&nbsp; Score: 7 &nbsp;|&nbsp; p3-score &nbsp;|&nbsp; TRIAL &nbsp;|&nbsp; 10+ ped/dia &nbsp;|&nbsp; Tem computador &nbsp;|&nbsp; App Garçom+Balcão+Delivery &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg">"Já está em operação"</div>
+      <div class="msg">"Passa dos 1000"</div>
+      <div class="msg">"Agente não perde pedido, mais demora um pouco pq o WhatsApp fica congestionado"</div>
+      <div class="msg">"Organiza os pedidos do WhatsApp/ delivery e demora pra reponder, pq o fluxo é grande"</div>
+      <div class="msg">"Só isso msm"</div>
+      <div class="msg preco">"Fico com pé a trás no valores, tô achando caro e ao mesmo tempo não tô kkkkkkk"</div>
+      <div class="msg objecao">"Vou pensar e entro em contato com vcs"</div>
+      <div class="msg objecao">"Vou pensar e amanhã voltamos a conversar"</div>
+      <div class="msg objecao">"Agente volta a conversar amanhã, pode ser?"</div>
+      <div class="msg">"Vou pensar na positividade viu"</div>
+      <div class="msg">"Entendo"</div>
+      <div class="msg">"Sim, mostrar"</div>
+    </div>
+    <div class="conversa-block">
+      <div class="deal-header">🏪 LANCHES.COM &nbsp;|&nbsp; Score: -10 &nbsp;|&nbsp; p2-score &nbsp;|&nbsp; googleads &nbsp;|&nbsp; <10 ped/dia &nbsp;|&nbsp; Sem computador &nbsp;|&nbsp; Handoff inbound</div>
+      <div class="msg">[Múltiplas objeções — lead engajado mas travado em 2+ barreiras]</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PERFIL 9: SILENCIOSO (Sofia tentou 1-2x) -->
+<!-- ============================================================ -->
+<div class="perfil">
+<div class="perfil-header">
+  <h2>🔴 Perfil 9 — SILENCIOSO (Sofia tentou 1-2x, lead ignorou)</h2>
+  <span class="badge badge-transbordo">TRANSBORDAR</span>
+</div>
+<div class="perfil-body">
+<div>
+<div class="section">
+  <h3>📊 Quem é esse lead?</h3>
+  <table class="stats-table">
+    <tr><td>Volume</td><td><span class="tag tag-red"><strong>1.254 leads</strong></span> — 12% da base! ~120/dia</td></tr>
+    <tr><td>Taxa de conversão</td><td><span class="tag tag-red">1.0%</span> — apenas 12 converteram de 1.254</td></tr>
+    <tr><td>Priorização</td><td><span class="tag tag-blue">p2-score (55%)</span> <span class="tag tag-blue">p3-score (30%)</span> <span class="tag tag-blue">p1-score (15%)</span></td></tr>
+    <tr><td>Score médio</td><td><strong>30</strong></td></tr>
+    <tr><td>Origem</td><td>googleads (30%), anota-app-mobile-new (25%), facebook (15%)</td></tr>
+    <tr><td>Source</td><td>TRIAL (35%), SHOWCASE SELF SOFIA, LP SELF CHECKOUT, SF INBOUND</td></tr>
+    <tr><td>Pedidos/dia</td><td>55% Mais de 10, 45% Menos de 10</td></tr>
+    <tr><td>Computador</td><td>55% Não, 45% Sim</td></tr>
+    <tr><td>Qualificou?</td><td><span class="tag tag-red">NÃO</span></td></tr>
+    <tr><td>Respondeu Sofia?</td><td><span class="tag tag-red">NÃO</span> — nunca respondeu</td></tr>
+    <tr><td>Mensagens lead D+1</td><td><strong>0</strong> — lead não manda NADA no D+1</td></tr>
+    <tr><td>Mensagens Sofia D+1</td><td><strong>1.1 em média</strong> — Sofia tentou 1-2x sem resposta</td></tr>
+  </table>
+</div>
+</div>
+<div>
+<div class="section">
+  <h3>💬 Comportamento típico</h3>
+  <div class="comportamento">
+    Lead <strong>completamente silencioso</strong>. Sofia já tentou contato 1-2 vezes e o lead simplesmente ignorou. Não mandou NENHUMA mensagem no D+1. É o <strong>MAIOR grupo de transbordo</strong> (1.254 leads em 3 meses = ~120/dia). Com apenas 1% de conversão, insistir com o bot é desperdício. O lead pode: (a) não ter visto as mensagens, (b) ter desistido, (c) estar esperando contato humano, ou (d) ter comprado de outro fornecedor.
+  </div>
+  <div class="regra">
+    <strong>REGRA DE TRANSBORDO:</strong> Se <code>respondeu_primeira_msg = 0</code> E <code>msgs_sofia >= 1</code> → <strong>TRANSBORDAR</strong>. Sofia já tentou. Agora é a vez do comercial tentar uma abordagem diferente (ligação, WhatsApp pessoal, etc).
+  </div>
+</div>
+<div class="section">
+  <h3>📋 Features agregadas deste perfil</h3>
+  <div class="features-grid">
+    <div class="feature-chip"><div class="val">0</div><div class="lbl">Msgs Lead D+1</div></div>
+    <div class="feature-chip"><div class="val">1.1</div><div class="lbl">Msgs Sofia D+1</div></div>
+    <div class="feature-chip"><div class="val">0%</div><div class="lbl">Pediu Humano</div></div>
+    <div class="feature-chip"><div class="val">0%</div><div class="lbl">Objeções</div></div>
+    <div class="feature-chip"><div class="val">0%</div><div class="lbl">Sent Negativo</div></div>
+    <div class="feature-chip"><div class="val">0%</div><div class="lbl">Concorrente</div></div>
+    <div class="feature-chip"><div class="val">0%</div><div class="lbl">Preço</div></div>
+    <div class="feature-chip"><div class="val">0%</div><div class="lbl">Urgência</div></div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PERFIL 10: RESPONDEU 1x + VOLTOU D+1 -->
+<!-- ============================================================ -->
+<div class="perfil">
+<div class="perfil-header">
+  <h2>🔴 Perfil 10 — RESPONDEU 1ª MSG + Voltou D+1 (mas não qualificou)</h2>
+  <span class="badge badge-transbordo">TRANSBORDAR</span>
+</div>
+<div class="perfil-body">
+<div>
+<div class="section">
+  <h3>📊 Quem é esse lead?</h3>
+  <table class="stats-table">
+    <tr><td>Volume</td><td><strong>216 leads</strong> (3 meses) — ~20/dia</td></tr>
+    <tr><td>Taxa de conversão</td><td><span class="tag tag-red">1.4%</span> — apenas 3 converteram</td></tr>
+    <tr><td>Priorização</td><td><span class="tag tag-blue">p2-score (50%)</span> <span class="tag tag-blue">p3-score (30%)</span></td></tr>
+    <tr><td>Score médio</td><td><strong>30</strong></td></tr>
+    <tr><td>Origem</td><td>googleads (35%), anota-app-mobile-new (25%), facebook (15%)</td></tr>
+    <tr><td>Source</td><td>TRIAL (40%), SHOWCASE SELF SOFIA, LP SELF CHECKOUT</td></tr>
+    <tr><td>Pedidos/dia</td><td>58% Mais de 10</td></tr>
+    <tr><td>Computador</td><td>58% Não</td></tr>
+    <tr><td>Qualificou?</td><td><span class="tag tag-red">NÃO</span></td></tr>
+    <tr><td>Respondeu Sofia?</td><td><span class="tag tag-orange">Sim (1ª msg)</span> — mas não passou da qualificação</td></tr>
+    <tr><td>Mensagens lead D+1</td><td><strong>1.0 em média</strong> — lead voltou com 1 msg</td></tr>
+    <tr><td>Mensagens Sofia D+1</td><td>2.3 em média</td></tr>
+  </table>
+</div>
+</div>
+<div>
+<div class="section">
+  <h3>💬 Comportamento típico</h3>
+  <div class="comportamento">
+    Lead <strong>respondeu a 1ª mensagem da Sofia</strong> (sinal positivo!), mas <strong>não completou a qualificação</strong>. No D+1, o lead VOLTOU a mandar mensagem — o que mostra interesse — mas não o suficiente para qualificar. Sinais confusos: quer algo, mas não quer falar com o bot. 1.4% de conversão é muito baixo para justificar represamento. Pode ser que o lead: (a) tenha dúvidas não respondidas pelo bot, (b) queira falar com humano mas não pediu explicitamente, ou (c) esteja no meio de um processo de decisão e precisa de um empurrão.
+  </div>
+  <div class="regra">
+    <strong>REGRA DE TRANSBORDO:</strong> Se <code>respondeu_primeira_msg = 1</code> E <code>qualificou = 0</code> E <code>msgs_lead >= 1</code> → <strong>TRANSBORDAR</strong>. Lead deu sinal de vida mas não avança. Melhor passar pro comercial do que perder.
+  </div>
+</div>
+<div class="section">
+  <h3>📋 Comparação: Perfil 10 vs Perfil 20 (RESPONDEU 1x e PAROU)</h3>
+  <table class="stats-table">
+    <tr><td></td><td style="color:var(--red)">Perfil 10 — Voltou D+1</td><td style="color:var(--green)">Perfil 20 — Parou</td></tr>
+    <tr><td>Volume</td><td>216 leads</td><td>1.036 leads</td></tr>
+    <tr><td>Conversão</td><td style="color:var(--red)">1.4%</td><td style="color:var(--green)">7.6%</td></tr>
+    <tr><td>Decisão</td><td style="color:var(--red)">TRANSBORDAR</td><td style="color:var(--green)">REPRESAR</td></tr>
+    <tr><td>Motivo</td><td>Voltou mas não converte</td><td>Respondeu e silenciou = pensando</td></tr>
+  </table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABELA RESUMO FINAL -->
+<!-- ============================================================ -->
+<div class="perfil">
+<div class="perfil-header">
+  <h2>📋 Tabela Resumo — 10 Perfis de Transbordo D+1</h2>
+</div>
+<div class="perfil-body" style="grid-template-columns:1fr;">
+<div>
+<table class="stats-table">
+<tr style="color:var(--blue);font-weight:700;">
+  <td>#</td><td>PERFIL</td><td>LEADS</td><td>TX CONV</td><td>REGRA</td><td>PRIORIDADE</td><td>SLA</td>
+</tr>
+<tr>
+  <td>1</td><td>PEDIU HUMANO sem engajamento</td><td>~3</td><td style="color:var(--red)">~0%</td><td><code>pediu_humano=1 E respondeu_1a=0</code></td><td style="color:var(--red)">🔴 CRÍTICO</td><td>&lt; 1h</td>
+</tr>
+<tr>
+  <td>2</td><td>PEDIU HUMANO Engajado</td><td>13</td><td style="color:var(--green)">23.1%</td><td><code>pediu_humano=1 E qualificou=1</code></td><td style="color:var(--orange)">🟡 Represar D+1</td><td>24h (se repetir)</td>
+</tr>
+<tr>
+  <td>3</td><td>NEGATIVO / Insatisfeito</td><td>13</td><td style="color:var(orange)">8.3%</td><td><code>sent_neg=1</code></td><td style="color:var(--red)">🔴 CRÍTICO</td><td>&lt; 4h</td>
+</tr>
+<tr>
+  <td>4</td><td>CONCORRENTE Não Engajado</td><td>1</td><td style="color:var(--red)">0%</td><td><code>concorrente=1 E qualificou=0</code></td><td style="color:var(--red)">🔴 URGENTE</td><td>&lt; 4h</td>
+</tr>
+<tr>
+  <td>5</td><td>CONCORRENTE Engajado</td><td>4</td><td style="color:var(--green)">25.0%</td><td><code>concorrente=1 E qualificou=1</code></td><td style="color:var(--green)">🟢 Represar</td><td>—</td>
+</tr>
+<tr>
+  <td>6</td><td>PREÇO Não Engajado</td><td>2</td><td style="color:var(--red)">0%</td><td><code>preco=1 E qualificou=0</code></td><td style="color:var(--orange)">🟠 Transbordar</td><td>&lt; 24h</td>
+</tr>
+<tr>
+  <td>7</td><td>PREÇO + Objeções</td><td>10</td><td style="color:var(--red)">0%</td><td><code>preco=1 E objecoes>=1</code></td><td style="color:var(--red)">🔴 URGENTE</td><td>&lt; 24h</td>
+</tr>
+<tr>
+  <td>8</td><td>MÚLTIPLAS OBJEÇÕES (2+)</td><td>10</td><td style="color:var(--red)">0%</td><td><code>objecoes>=2 E qualificou=1</code></td><td style="color:var(--red)">🔴 URGENTE</td><td>&lt; 24h</td>
+</tr>
+<tr>
+  <td>9</td><td>SILENCIOSO (Sofia 1-2x)</td><td style="color:var(--red)"><strong>1.254</strong></td><td style="color:var(--red)">1.0%</td><td><code>respondeu_1a=0 E msgs_sofia>=1</code></td><td style="color:var(--orange)">🟠 MAIOR VOLUME</td><td>&lt; 48h</td>
+</tr>
+<tr>
+  <td>10</td><td>RESPONDEU 1x + Voltou D+1</td><td>216</td><td style="color:var(--red)">1.4%</td><td><code>respondeu_1a=1 E qualificou=0 E msgs_lead>=1</code></td><td style="color:var(--orange)">🟠 Transbordar</td><td>&lt; 48h</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+
+<p style="text-align:center;color:#8b949e;font-size:0.85em;margin:40px 0;">Base: 10.441 leads D+1 (março a junho/2026) — Databricks new_ventures_anotaai_leads + anotaai_sofia_bot_b2b — Kevilyn | Julho/2026<br>Prompt para Bot Sofia: use as regras acima para decidir quando transbordar leads no D+1.</p>
+
+</div>
+</body>
+</html>
